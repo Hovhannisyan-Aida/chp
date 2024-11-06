@@ -1,0 +1,64 @@
+#include <iostream>
+#include <string>
+#include <sstream>
+
+std::string caesar(const std::string& input, int shift) {
+    std::string result;
+    for (char c : input) {
+        if (std::isalpha(c)) {
+            char base = std::islower(c) ? 'a' : 'A';
+            result += (c - base + shift) % 26 + base;
+        } else {
+            result += c; 
+        }
+    }
+    return result;
+}
+
+std::string runLengthEncode(const std::string& input) {
+    std::string encoded;
+    int n = input.size();
+    
+    for (int i = 0; i < n; ++i) {
+        int count = 1;
+        while (i < n - 1 && input[i] == input[i + 1]) {
+            ++count;
+            ++i;
+        }
+        encoded += input[i] + std::to_string(count); 
+    }
+    
+    return encoded;
+}
+
+std::string runLengthDecode(const std::string& encoded) {
+    std::string decoded;
+    for (size_t i = 0; i < encoded.size(); i += 2) {
+        char character = encoded[i];
+        int count = encoded[i + 1] - '0'; 
+        decoded.append(count, character);  
+    }
+    return decoded;
+}
+
+int main() {
+    std::string text;
+    int shift = 3; 
+
+    std::cout << "Enter text to encode: ";
+    std::getline(std::cin, text);
+
+    std::string caesarEncoded = caesar(text, shift);
+    std::cout << "Caesar Encoded Text: " << caesarEncoded << std::endl;
+
+    std::string rleEncoded = runLengthEncode(caesarEncoded);
+    std::cout << "RLE Encoded Text: " << rleEncoded << std::endl;
+
+    std::string decodedRle = runLengthDecode(rleEncoded);
+    std::cout << "Decoded RLE (Caesar Encoded Text): " << decodedRle << std::endl;
+
+    std::string originalText = caesar(decodedRle, 26 - shift);
+    std::cout << "Restored Original Text: " << originalText << std::endl;
+
+    return 0;
+}
